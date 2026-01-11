@@ -32,6 +32,36 @@ header {
     flex-wrap: wrap;
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.theme-toggle {
+    background: none;
+    border: 2px solid #8b4513;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.5rem;
+}
+
+.theme-toggle:hover {
+    background-color: #8b4513;
+    transform: scale(1.1);
+}
+
+.theme-icon {
+    display: block;
+    line-height: 1;
+}
+
 .logo {
     font-size: 1.8rem;
     font-weight: bold;
@@ -423,6 +453,11 @@ footer {
         gap: 1rem;
     }
 
+    .header-right {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
     nav ul {
         gap: 1rem;
         justify-content: center;
@@ -475,4 +510,175 @@ footer {
     .cake-info h1 {
         font-size: 2rem;
     }
+}
+
+/* Темная тема */
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --card-bg: #2d2d2d;
+    --border-color: #404040;
+    --hover-color: #d4a574;
+    --accent-color: #d4a574;
+}
+
+[data-theme="dark"] body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] header {
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] nav ul li a {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] nav ul li a:hover {
+    color: var(--hover-color);
+}
+
+[data-theme="dark"] .logo {
+    color: var(--accent-color);
+}
+
+[data-theme="dark"] .theme-toggle {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+[data-theme="dark"] .section h2 {
+    color: var(--accent-color);
+}
+
+[data-theme="dark"] .section p {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .cake-card {
+    background: var(--card-bg);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .cake-card h3 {
+    color: var(--accent-color);
+}
+
+[data-theme="dark"] .cake-card p {
+    color: #b0b0b0;
+}
+
+[data-theme="dark"] .cake-card a {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+[data-theme="dark"] .cake-card a:hover {
+    background-color: #b8956a;
+}
+
+[data-theme="dark"] .cake-info h1 {
+    color: var(--accent-color);
+}
+
+[data-theme="dark"] .cake-info p {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .order-btn {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+[data-theme="dark"] .order-btn:hover {
+    background-color: #b8956a;
+}
+
+[data-theme="dark"] .recipe-table {
+    background: var(--card-bg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .recipe-table th {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+[data-theme="dark"] .recipe-table td {
+    color: var(--text-color);
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .recipe-table tr:hover {
+    background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .contact-form {
+    background: var(--card-bg);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .contact-info {
+    background: var(--card-bg);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .contact-info h2 {
+    color: var(--accent-color);
+}
+
+[data-theme="dark"] .contact-info p {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .form-group label {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group textarea {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group textarea:focus {
+    border-color: var(--accent-color);
+    outline: none;
+}
+
+[data-theme="dark"] .history-content {
+    background: var(--card-bg);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .history-content h1 {
+    color: var(--accent-color);
+}
+
+[data-theme="dark"] .history-content h2 {
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
+}
+
+[data-theme="dark"] .history-content p {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .history-navigation a {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+[data-theme="dark"] .history-navigation a:hover {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
 }

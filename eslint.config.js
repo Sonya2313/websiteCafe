@@ -26,6 +26,7 @@ module.exports = [
         console: 'readonly',
         alert: 'readonly',
         fetch: 'readonly',
+        localStorage: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
         __dirname: 'readonly',

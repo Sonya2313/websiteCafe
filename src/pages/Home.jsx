@@ -1,7 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
+  const [cakes, setCakes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCakes = async () => {
+      try {
+        const response = await fetch('/cakes');
+        if (!response.ok) {
+          throw new Error('Ошибка загрузки данных');
+        }
+        const data = await response.json();
+        setCakes(data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Ошибка загрузки тортов:', err);
+        setLoading(false);
+      }
+    };
+
+    fetchCakes();
+  }, []);
+
   return (
     <>
       <div className="hero">
@@ -30,32 +52,22 @@ const Home = () => {
           В нашем меню представлены три легендарных торта, каждый из которых имеет свою уникальную историю 
           и неповторимый вкус. От классического Наполеона до нежного Чизкейка — у нас найдется торт для каждого.
         </p>
-        <div className="cakes-grid">
-          <div className="cake-card">
-            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Наполеон" />
-            <div className="cake-card-content">
-              <h3>Наполеон</h3>
-              <p>Классический многослойный торт с нежным заварным кремом</p>
-              <Link to="/napoleon">Подробнее</Link>
-            </div>
+        {loading ? (
+          <p>Загрузка тортиков...</p>
+        ) : (
+          <div className="cakes-grid">
+            {cakes.map((cake) => (
+              <div key={cake.id} className="cake-card">
+                <img src={cake.image} alt={cake.name} />
+                <div className="cake-card-content">
+                  <h3>{cake.name}</h3>
+                  <p>{cake.description}</p>
+                  <Link to={`/${cake.id}`}>Подробнее</Link>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="cake-card">
-            <img src="https://images.unsplash.com/photo-1621303837174-89787a7d4729?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Медовик" />
-            <div className="cake-card-content">
-              <h3>Медовик</h3>
-              <p>Ароматный медовый торт с кремом из сметаны</p>
-              <Link to="/medovik">Подробнее</Link>
-            </div>
-          </div>
-          <div className="cake-card">
-            <img src="https://images.unsplash.com/photo-1524351199678-941a58a3df50?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Чизкейк" />
-            <div className="cake-card-content">
-              <h3>Чизкейк</h3>
-              <p>Нежный сырный торт с ягодным топпингом</p>
-              <Link to="/cheesecake">Подробнее</Link>
-            </div>
-          </div>
-        </div>
+        )}
       </section>
 
       <section className="section">

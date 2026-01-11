@@ -1,7 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const Cakes = () => {
+  const [cakes, setCakes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCakes = async () => {
+      try {
+        const response = await fetch('/cakes');
+        if (!response.ok) {
+          throw new Error('Ошибка загрузки данных');
+        }
+        const data = await response.json();
+        setCakes(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchCakes();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="section">
+        <p>Загрузка тортиков...</p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="section">
+        <p>Ошибка: {error}</p>
+      </section>
+    );
+  }
+
   return (
     <>
       <section className="section">
@@ -13,44 +52,17 @@ const Cakes = () => {
       </section>
 
       <div className="cakes-grid">
-        <div className="cake-card">
-          <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Наполеон" />
-          <div className="cake-card-content">
-            <h3>Наполеон</h3>
-            <p>
-              Классический многослойный торт, состоящий из тонких слоев слоеного теста и нежного заварного крема. 
-              Этот торт покоряет сердца уже много десятилетий своей воздушностью и изысканным вкусом.
-            </p>
-            <p><strong>Цена: 45 руб.</strong></p>
-            <Link to="/napoleon">Подробнее и заказать</Link>
+        {cakes.map((cake) => (
+          <div key={cake.id} className="cake-card">
+            <img src={cake.image} alt={cake.name} />
+            <div className="cake-card-content">
+              <h3>{cake.name}</h3>
+              <p>{cake.description}</p>
+              <p><strong>Цена: {cake.price} руб.</strong></p>
+              <Link to={`/${cake.id}`}>Подробнее и заказать</Link>
+            </div>
           </div>
-        </div>
-
-        <div className="cake-card">
-          <img src="https://images.unsplash.com/photo-1621303837174-89787a7d4729?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Медовик" />
-          <div className="cake-card-content">
-            <h3>Медовик</h3>
-            <p>
-              Ароматный медовый торт с нежным кремом из сметаны. Каждый слой пропитан медовым сиропом, 
-              что делает торт особенно сочным и вкусным. Идеальное сочетание сладости меда и нежности крема.
-            </p>
-            <p><strong>Цена: 42 руб.</strong></p>
-            <Link to="/medovik">Подробнее и заказать</Link>
-          </div>
-        </div>
-
-        <div className="cake-card">
-          <img src="https://images.unsplash.com/photo-1524351199678-941a58a3df50?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Чизкейк" />
-          <div className="cake-card-content">
-            <h3>Чизкейк</h3>
-            <p>
-              Нежный сырный торт на основе творожного сыра с ягодным топпингом. Легкий и воздушный, 
-              с идеальным балансом сладости и кислотности. Настоящее удовольствие для ценителей изысканных десертов.
-            </p>
-            <p><strong>Цена: 48 руб.</strong></p>
-            <Link to="/cheesecake">Подробнее и заказать</Link>
-          </div>
-        </div>
+        ))}
       </div>
 
       <section className="section">

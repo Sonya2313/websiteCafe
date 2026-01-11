@@ -49,6 +49,13 @@ module.exports = {
     hot: true,
     historyApiFallback: true,
     open: true,
+    proxy: {
+      '/cakes': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        logLevel: 'debug',
+      },
+    },
   },
   mode: 'development',
 };

@@ -1,37 +1,65 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Medovik = () => {
+  const cakeId = 'medovik';
+  const [cake, setCake] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCake = async () => {
+      try {
+        const response = await fetch(`/cakes/${cakeId}`);
+        if (!response.ok) {
+          throw new Error('Ошибка загрузки данных');
+        }
+        const data = await response.json();
+        setCake(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchCake();
+  }, [cakeId]);
+
   const handleOrder = () => {
     alert('Спасибо за заказ! Мы свяжемся с вами в ближайшее время.');
   };
 
+  if (loading) {
+    return (
+      <section className="section">
+        <p>Загрузка...</p>
+      </section>
+    );
+  }
+
+  if (error || !cake) {
+    return (
+      <section className="section">
+        <p>Ошибка: {error || 'Торт не найден'}</p>
+      </section>
+    );
+  }
+
   return (
     <>
       <div className="cake-detail">
-        <img src="https://images.unsplash.com/photo-1621303837174-89787a7d4729?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Медовик" />
+        <img src={cake.image} alt={cake.name} />
         <div className="cake-info">
-          <h1>Медовик</h1>
-          <p>
-            Медовик — это ароматный и сочный торт, который покоряет своим медовым вкусом и нежной текстурой. 
-            Наш Медовик состоит из тонких медовых коржей, пропитанных нежным кремом на основе сметаны. 
-            Каждый кусочек тает во рту, оставляя послевкусие натурального меда.
-          </p>
-          <p>
-            Мы используем только натуральный мед и свежую сметану высшего качества. Коржи выпекаются до 
-            золотисто-коричневого цвета и имеют характерный медовый аромат. Крем готовится с добавлением 
-            сахарной пудры и ванили, что создает идеальный баланс сладости и нежности.
-          </p>
-          <p><strong>Цена: 42 руб.</strong></p>
+          <h1>{cake.name}</h1>
+          <p>{cake.fullDescription}</p>
+          <p><strong>Цена: {cake.price} руб.</strong></p>
           <button className="order-btn" onClick={handleOrder}>Заказать</button>
         </div>
       </div>
 
       <section className="section">
         <h2>Рецепт приготовления</h2>
-        <p>
-          Медовик — это торт, который требует внимания к деталям, но результат того стоит. 
-          Предлагаем вам попробовать приготовить его по нашему рецепту.
-        </p>
+        <p>{cake.recipe.description}</p>
         <table className="recipe-table">
           <thead>
             <tr>
@@ -41,64 +69,17 @@ const Medovik = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Мед</td>
-              <td>200 г</td>
-              <td>Натуральный, жидкий</td>
-            </tr>
-            <tr>
-              <td>Сахар</td>
-              <td>150 г</td>
-              <td>Для теста</td>
-            </tr>
-            <tr>
-              <td>Сливочное масло</td>
-              <td>100 г</td>
-              <td>Размягченное</td>
-            </tr>
-            <tr>
-              <td>Яйца</td>
-              <td>3 шт</td>
-              <td>Крупные</td>
-            </tr>
-            <tr>
-              <td>Мука</td>
-              <td>500 г</td>
-              <td>Высший сорт</td>
-            </tr>
-            <tr>
-              <td>Сода</td>
-              <td>1 ч.л.</td>
-              <td>Погашенная уксусом</td>
-            </tr>
-            <tr>
-              <td>Сметана</td>
-              <td>800 г</td>
-              <td>Жирность 20-25%</td>
-            </tr>
-            <tr>
-              <td>Сахарная пудра</td>
-              <td>200 г</td>
-              <td>Для крема</td>
-            </tr>
-            <tr>
-              <td>Ваниль</td>
-              <td>1 ч.л.</td>
-              <td>Для крема</td>
-            </tr>
-            <tr>
-              <td>Грецкие орехи</td>
-              <td>100 г</td>
-              <td>Для украшения</td>
-            </tr>
+            {cake.recipe.ingredients.map((ingredient, index) => (
+              <tr key={index}>
+                <td>{ingredient.name}</td>
+                <td>{ingredient.amount}</td>
+                <td>{ingredient.note}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
         <p>
-          <strong>Приготовление:</strong> Растопите мед с сахаром и маслом на водяной бане. Добавьте яйца и соду, 
-          перемешайте. Постепенно введите муку и замесите тесто. Разделите на 6-8 частей и раскатайте тонкие коржи. 
-          Выпекайте при температуре 180°C до золотистого цвета. Для крема взбейте сметану с сахарной пудрой и ванилью. 
-          Соберите торт, промазывая каждый корж кремом. Дайте настояться в холодильнике не менее 8 часов. 
-          Перед подачей посыпьте крошкой и орехами.
+          <strong>Приготовление:</strong> {cake.recipe.instructions}
         </p>
       </section>
     </>

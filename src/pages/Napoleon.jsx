@@ -1,37 +1,82 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Napoleon = () => {
+  const cakeId = 'napoleon';
+  const [cake, setCake] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCake = async () => {
+      try {
+        const url = `/cakes/${cakeId}`;
+        console.log('Запрос к:', url);
+        const response = await fetch(url);
+        console.log('Ответ получен:', response.status, response.statusText);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Ошибка ответа:', errorText);
+          throw new Error(`Ошибка загрузки данных: ${response.status} ${response.statusText}`);
+        }
+        const data = await response.json();
+        console.log('Данные получены:', data);
+        setCake(data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Ошибка загрузки торта:', err);
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchCake();
+  }, [cakeId]);
+
   const handleOrder = () => {
     alert('Спасибо за заказ! Мы свяжемся с вами в ближайшее время.');
   };
 
+  if (loading) {
+    return (
+      <section className="section">
+        <p>Загрузка...</p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="section">
+        <h2>Ошибка загрузки данных</h2>
+        <p>Ошибка: {error}</p>
+        <p>Убедитесь, что сервер запущен на порту 3001</p>
+      </section>
+    );
+  }
+
+  if (!cake) {
+    return (
+      <section className="section">
+        <p>Торт не найден</p>
+      </section>
+    );
+  }
+
   return (
     <>
       <div className="cake-detail">
-        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Наполеон" />
+        <img src={cake.image} alt={cake.name} />
         <div className="cake-info">
-          <h1>Наполеон</h1>
-          <p>
-            Наполеон — это классический многослойный торт, который стал символом изысканной кондитерской традиции. 
-            Наш Наполеон состоит из тончайших слоев слоеного теста, между которыми находится нежнейший заварной крем 
-            с ванилью. Каждый слой пропитывается кремом, создавая неповторимую текстуру и вкус.
-          </p>
-          <p>
-            Мы готовим этот торт по традиционному рецепту, передаваемому из поколения в поколение. Тесто выпекается 
-            до золотистого цвета, а крем готовится на основе молока и яиц с добавлением натуральной ванили. 
-            Верхний слой посыпается крошкой из теста, что придает торту завершенный вид.
-          </p>
-          <p><strong>Цена: 45 руб.</strong></p>
+          <h1>{cake.name}</h1>
+          <p>{cake.fullDescription}</p>
+          <p><strong>Цена: {cake.price} руб.</strong></p>
           <button className="order-btn" onClick={handleOrder}>Заказать</button>
         </div>
       </div>
 
       <section className="section">
         <h2>Рецепт приготовления</h2>
-        <p>
-          Для тех, кто хочет попробовать приготовить Наполеон дома, мы делимся нашим рецептом. 
-          Обратите внимание, что для достижения идеального результата требуется терпение и аккуратность.
-        </p>
+        <p>{cake.recipe.description}</p>
         <table className="recipe-table">
           <thead>
             <tr>
@@ -41,63 +86,17 @@ const Napoleon = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Мука</td>
-              <td>500 г</td>
-              <td>Высший сорт</td>
-            </tr>
-            <tr>
-              <td>Сливочное масло</td>
-              <td>400 г</td>
-              <td>Охлажденное</td>
-            </tr>
-            <tr>
-              <td>Вода</td>
-              <td>200 мл</td>
-              <td>Холодная</td>
-            </tr>
-            <tr>
-              <td>Яйца</td>
-              <td>2 шт</td>
-              <td>Для теста</td>
-            </tr>
-            <tr>
-              <td>Молоко</td>
-              <td>1 л</td>
-              <td>Для крема</td>
-            </tr>
-            <tr>
-              <td>Яйца</td>
-              <td>4 шт</td>
-              <td>Для крема</td>
-            </tr>
-            <tr>
-              <td>Сахар</td>
-              <td>300 г</td>
-              <td>Для крема</td>
-            </tr>
-            <tr>
-              <td>Мука</td>
-              <td>100 г</td>
-              <td>Для крема</td>
-            </tr>
-            <tr>
-              <td>Ваниль</td>
-              <td>1 ч.л.</td>
-              <td>Натуральная</td>
-            </tr>
-            <tr>
-              <td>Сливочное масло</td>
-              <td>200 г</td>
-              <td>Для крема, размягченное</td>
-            </tr>
+            {cake.recipe.ingredients.map((ingredient, index) => (
+              <tr key={index}>
+                <td>{ingredient.name}</td>
+                <td>{ingredient.amount}</td>
+                <td>{ingredient.note}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
         <p>
-          <strong>Приготовление:</strong> Замесите тесто из муки, масла, воды и яиц. Раскатайте в тонкие пласты 
-          и выпекайте каждый слой отдельно при температуре 200°C до золотистого цвета. Для крема смешайте молоко, 
-          яйца, сахар и муку, варите до загустения, затем добавьте масло и ваниль. Соберите торт, промазывая каждый 
-          слой кремом. Дайте настояться в холодильнике не менее 6 часов.
+          <strong>Приготовление:</strong> {cake.recipe.instructions}
         </p>
       </section>
     </>

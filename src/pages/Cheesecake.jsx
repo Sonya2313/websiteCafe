@@ -1,37 +1,65 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Cheesecake = () => {
+  const cakeId = 'cheesecake';
+  const [cake, setCake] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCake = async () => {
+      try {
+        const response = await fetch(`/cakes/${cakeId}`);
+        if (!response.ok) {
+          throw new Error('Ошибка загрузки данных');
+        }
+        const data = await response.json();
+        setCake(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchCake();
+  }, [cakeId]);
+
   const handleOrder = () => {
     alert('Спасибо за заказ! Мы свяжемся с вами в ближайшее время.');
   };
 
+  if (loading) {
+    return (
+      <section className="section">
+        <p>Загрузка...</p>
+      </section>
+    );
+  }
+
+  if (error || !cake) {
+    return (
+      <section className="section">
+        <p>Ошибка: {error || 'Торт не найден'}</p>
+      </section>
+    );
+  }
+
   return (
     <>
       <div className="cake-detail">
-        <img src="https://images.unsplash.com/photo-1524351199678-941a58a3df50?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Чизкейк" />
+        <img src={cake.image} alt={cake.name} />
         <div className="cake-info">
-          <h1>Чизкейк</h1>
-          <p>
-            Чизкейк — это изысканный десерт, который сочетает в себе нежность творожного сыра и сладость 
-            ягодного топпинга. Наш Чизкейк готовится на основе печенья с добавлением сливочного масла для основы 
-            и нежного крема из творожного сыра, сливок и сахара.
-          </p>
-          <p>
-            Мы используем только качественный творожный сыр и свежие ягоды для топпинга. Торт запекается 
-            при низкой температуре, что позволяет сохранить нежную текстуру и избежать трещин. Верхний слой 
-            украшается свежими ягодами и ягодным соусом, что придает торту яркий и аппетитный вид.
-          </p>
-          <p><strong>Цена: 48 руб.</strong></p>
+          <h1>{cake.name}</h1>
+          <p>{cake.fullDescription}</p>
+          <p><strong>Цена: {cake.price} руб.</strong></p>
           <button className="order-btn" onClick={handleOrder}>Заказать</button>
         </div>
       </div>
 
       <section className="section">
         <h2>Рецепт приготовления</h2>
-        <p>
-          Чизкейк требует точности в приготовлении, но результат превосходит все ожидания. 
-          Попробуйте приготовить его по нашему рецепту.
-        </p>
+        <p>{cake.recipe.description}</p>
         <table className="recipe-table">
           <thead>
             <tr>
@@ -41,64 +69,17 @@ const Cheesecake = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Печенье</td>
-              <td>300 г</td>
-              <td>Песочное, измельченное</td>
-            </tr>
-            <tr>
-              <td>Сливочное масло</td>
-              <td>100 г</td>
-              <td>Растопленное</td>
-            </tr>
-            <tr>
-              <td>Творожный сыр</td>
-              <td>600 г</td>
-              <td>Комнатной температуры</td>
-            </tr>
-            <tr>
-              <td>Сахар</td>
-              <td>200 г</td>
-              <td>Для крема</td>
-            </tr>
-            <tr>
-              <td>Яйца</td>
-              <td>3 шт</td>
-              <td>Комнатной температуры</td>
-            </tr>
-            <tr>
-              <td>Сливки</td>
-              <td>200 мл</td>
-              <td>Жирность 33%</td>
-            </tr>
-            <tr>
-              <td>Ваниль</td>
-              <td>1 ч.л.</td>
-              <td>Экстракт</td>
-            </tr>
-            <tr>
-              <td>Ягоды</td>
-              <td>300 г</td>
-              <td>Клубника, малина, черника</td>
-            </tr>
-            <tr>
-              <td>Сахар</td>
-              <td>50 г</td>
-              <td>Для топпинга</td>
-            </tr>
-            <tr>
-              <td>Лимонный сок</td>
-              <td>1 ст.л.</td>
-              <td>Свежевыжатый</td>
-            </tr>
+            {cake.recipe.ingredients.map((ingredient, index) => (
+              <tr key={index}>
+                <td>{ingredient.name}</td>
+                <td>{ingredient.amount}</td>
+                <td>{ingredient.note}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
         <p>
-          <strong>Приготовление:</strong> Смешайте измельченное печенье с растопленным маслом и утрамбуйте в форму 
-          с высокими бортами. Выпекайте основу 10 минут при 180°C. Для крема взбейте творожный сыр с сахаром, 
-          добавьте яйца по одному, затем сливки и ваниль. Вылейте крем на основу и запекайте при 160°C в течение 
-          50-60 минут. Остудите в духовке с приоткрытой дверцей, затем уберите в холодильник на 6 часов. 
-          Для топпинга проварите ягоды с сахаром и лимонным соком до загустения. Подавайте чизкейк с ягодным топпингом.
+          <strong>Приготовление:</strong> {cake.recipe.instructions}
         </p>
       </section>
     </>
